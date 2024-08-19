@@ -13,19 +13,20 @@ public class LoginController {
     @Autowired
     private CustomerService customerService;
 
+    // Display login form
     @GetMapping("/login")
     public String showLoginForm(Model model) {
         model.addAttribute("customer", new Customer());
         return "login";
     }
 
+    // Handle login submission
     @PostMapping("/login")
     public String login(@ModelAttribute Customer customer, Model model) {
         var existingCustomer = customerService.findByUsername(customer.getUsername());
 
         if (existingCustomer.isPresent() && existingCustomer.get().getPassword().equals(customer.getPassword())) {
-            model.addAttribute("error", "Yay! You are logged in!");
-            System.out.println("Yay! You are logged in!");
+            model.addAttribute("message", "Yay! You are logged in!");
             return "login";
         } else {
             model.addAttribute("error", "Invalid username or password");
@@ -33,14 +34,18 @@ public class LoginController {
         }
     }
 
+    // Display registration form
     @GetMapping("/register")
     public String showRegisterForm(Model model) {
         model.addAttribute("customer", new Customer());
         return "register";
     }
 
+    // Handle registration submission
     @PostMapping("/register")
     public String register(@ModelAttribute Customer customer, Model model) {
+        System.out.println("Registering customer: " + customer.getUsername());
+
         if (customerService.findByUsername(customer.getUsername()).isPresent()) {
             model.addAttribute("error", "Username already exists");
             return "register";
@@ -50,12 +55,14 @@ public class LoginController {
         return "redirect:/login";
     }
 
+    // Display change password form
     @GetMapping("/change-password")
     public String showChangePasswordForm(Model model) {
         model.addAttribute("customer", new Customer());
         return "change-password";
     }
 
+    // Handle change password submission
     @PostMapping("/change-password")
     public String changePassword(@ModelAttribute Customer customer, @RequestParam String newPassword, Model model) {
         var existingCustomer = customerService.findByUsername(customer.getUsername());
@@ -71,12 +78,14 @@ public class LoginController {
         }
     }
 
+    // Display forgot password form
     @GetMapping("/forgot-password")
     public String showForgotPasswordForm(Model model) {
         model.addAttribute("customer", new Customer());
         return "forgot-password";
     }
 
+    // Handle forgot password submission
     @PostMapping("/forgot-password")
     public String forgotPassword(@ModelAttribute Customer customer, @RequestParam String newPassword, Model model) {
         var existingCustomer = customerService.findByUsername(customer.getUsername());
@@ -92,6 +101,7 @@ public class LoginController {
         }
     }
 
+    // Display all customers (for administrative purposes)
     @GetMapping("/all")
     public String getAllCustomers(Model model) {
         model.addAttribute("customers", customerService.findAllCustomers());

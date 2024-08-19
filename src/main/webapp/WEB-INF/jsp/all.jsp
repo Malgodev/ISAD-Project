@@ -10,12 +10,14 @@
             <th>ID</th>
             <th>Name</th>
             <th>Email</th>
+            <th>Pass</th>
         </tr>
         <c:forEach var="customer" items="${customers}">
             <tr>
                 <td>${customer.id}</td>
                 <td>${customer.name}</td>
                 <td>${customer.email}</td>
+                <td>${customer.password}</td>
             </tr>
         </c:forEach>
     </table>
