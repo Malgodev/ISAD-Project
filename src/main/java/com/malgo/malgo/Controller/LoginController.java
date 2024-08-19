@@ -7,6 +7,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import com.malgo.malgo.util.PasswordValidator;
+
 @Controller
 public class LoginController {
 
@@ -44,7 +46,11 @@ public class LoginController {
     // Handle registration submission
     @PostMapping("/register")
     public String register(@ModelAttribute Customer customer, Model model) {
-        System.out.println("Registering customer: " + customer.getUsername());
+        
+        if (!PasswordValidator.isValidPassword(customer.getPassword())) {
+            model.addAttribute("error", PasswordValidator.getValidationErrorMessage());
+            return "register";
+        }
 
         if (customerService.findByUsername(customer.getUsername()).isPresent()) {
             model.addAttribute("error", "Username already exists");
@@ -68,7 +74,14 @@ public class LoginController {
         var existingCustomer = customerService.findByUsername(customer.getUsername());
 
         if (existingCustomer.isPresent() && existingCustomer.get().getPassword().equals(customer.getPassword())) {
+            
+            if (!PasswordValidator.isValidPassword(newPassword)) {
+                model.addAttribute("error", PasswordValidator.getValidationErrorMessage());
+                return "register";
+            }
+
             existingCustomer.get().setPassword(newPassword);
+
             customerService.saveCustomer(existingCustomer.get());
             model.addAttribute("message", "Password changed successfully");
             return "login";
@@ -91,6 +104,12 @@ public class LoginController {
         var existingCustomer = customerService.findByUsername(customer.getUsername());
 
         if (existingCustomer.isPresent()) {
+
+            if (!PasswordValidator.isValidPassword(newPassword)) {
+                model.addAttribute("error", PasswordValidator.getValidationErrorMessage());
+                return "register";
+            }
+
             existingCustomer.get().setPassword(newPassword);
             customerService.saveCustomer(existingCustomer.get());
             model.addAttribute("message", "Password reset successfully");
