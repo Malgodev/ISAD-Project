@@ -6,8 +6,8 @@ public class PasswordValidator {
     private static final String PASSWORD_PATTERN = "^(?=.*\\d)(?=.*[A-Z])(?=.*[@#$&*]).{8,}$";
 
     public static boolean isValidPassword(String password) {
-        // return Pattern.matches(PASSWORD_PATTERN, password);
-        return true;
+        return Pattern.matches(PASSWORD_PATTERN, password);
+        // return true;
     }
 
     public static String getValidationErrorMessage() {
